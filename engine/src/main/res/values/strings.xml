@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_switch_label">Watcher app switch</string>
+    <string name="app_switch_description">Double-press the side button to jump to the app you used before. Only sees which app is open and the side button; reads nothing on screen.</string>
+    <string name="clock_watch_label">Watcher clock</string>
+    <string name="clock_watch_description">Tells Watcher and the apps that draw on LightOS\'s clock whether the clock is on screen, by looking for its home circle. It reads no text and no other app\'s screen.</string>
+</resources>

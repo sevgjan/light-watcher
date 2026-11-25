@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A Watcher clock-shortcut glyph, drawn in the SDK's 40-unit style with 3-unit lines. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <path
+        android:pathData="M7,14 H33 A3,3 0 0 1 36,17 V32 A3,3 0 0 1 33,35 H7 A3,3 0 0 1 4,32 V17 A3,3 0 0 1 7,14 Z M10,14 L30,5 M9.5,21 H17 M9.5,27.5 H17"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+    <path
+        android:pathData="M31,24.5 A4.5,4.5 0 1 1 22,24.5 A4.5,4.5 0 1 1 31,24.5 Z"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round" />
+</vector>

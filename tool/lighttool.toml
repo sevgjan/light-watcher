@@ -1,0 +1,9 @@
+[tool]
+id = "io.github.sevgjan.watcher"
+label = "Watcher"
+versionCode = 3
+versionName = "0.3.0"
+permissions = ["android.permission.INTERNET"]
+capabilities = []
+serverPackage = "com.lightos"
+orientation = "portrait"
