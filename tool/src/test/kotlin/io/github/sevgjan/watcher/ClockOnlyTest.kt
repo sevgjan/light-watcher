@@ -35,3 +35,12 @@ class ClockOnlyTest {
         assertEquals(mapOf("com.example.chat" to true, "com.example.music" to false), parseOpPerPackage(out, "GET_USAGE_STATS"))
     }
 }
+
+class DozeTest {
+    @Test
+    fun readsDozeState() {
+        kotlin.test.assertTrue(io.github.sevgjan.watcher.engine.parseDozeEnabled("  mLightEnabled=true  mDeepEnabled=true\n"))
+        kotlin.test.assertFalse(io.github.sevgjan.watcher.engine.parseDozeEnabled("  mLightEnabled=false  mDeepEnabled=false\n"))
+        kotlin.test.assertFalse(io.github.sevgjan.watcher.engine.parseDozeEnabled(""))
+    }
+}

@@ -22,6 +22,7 @@ private class Status {
     var appSwitch by mutableStateOf<Boolean?>(null)
     var pairing by mutableStateOf<Boolean?>(null)
     var density by mutableStateOf<Bridge.Density?>(null)
+    var deepSleep by mutableStateOf<Boolean?>(null)
 
     suspend fun read() {
         if (Bridge.state.value != BridgeState.Ready) return
@@ -29,6 +30,7 @@ private class Status {
         appSwitch = Bridge.appSwitchOn()
         pairing = Bridge.pairingHelperOn()
         density = Bridge.density()
+        deepSleep = Bridge.deepSleepOn()
     }
 }
 
@@ -75,6 +77,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : SimpleLightScreen<Unit>(
             ActionRow("Bluetooth pairing", "Pairing helper: ${onOff(status.pairing).lowercase()}") {
                 navigateTo({ PairingScreen(it) })
             }
+            ActionRow("Battery", "Deep sleep: ${onOff(status.deepSleep).lowercase()}") { navigateTo({ BatteryScreen(it) }) }
             ActionRow("Screen size", when {
                 d == null -> NEEDS_BRIDGE
                 d.override != null && d.override != d.physical -> "Small (${d.current} dpi)"

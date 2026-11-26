@@ -52,6 +52,8 @@ object Bridge {
             check(reply.exitCode == 0 && reply.allOutput.contains("watcher-ok")) { "The bridge didn't answer." }
             dadb = d
             _state.value = BridgeState.Ready
+            // A restart turns doze off again; put it back if the user wants it.
+            if (DeepSleep.wanted && deepSleepOn() == false) setDeepSleep(true)
         } catch (e: Exception) {
             val m = e.message.orEmpty()
             _state.value = BridgeState.Failed(
@@ -239,6 +241,12 @@ object Bridge {
         return shell("cmd appops set $pkg SYSTEM_ALERT_WINDOW allow") != null
     }
 
+    /** Doze (Android's deep sleep for an idle phone) is on. LightOS ships with it off. */
+    suspend fun deepSleepOn(): Boolean? = shell("dumpsys deviceidle | grep mDeepEnabled")?.let(::parseDozeEnabled)
+
+    /** Turns doze, light and deep, on or off. It lasts until the phone restarts. */
+    suspend fun setDeepSleep(on: Boolean): Boolean = shell("cmd deviceidle ${if (on) "enable" else "disable"}") != null
+
     /** Starts a Settings action from the shell, for when Watcher itself isn't allowed to start it. */
     suspend fun openSystemSettings(action: String): Boolean =
         shell("am start -a $action")?.let { "Error" !in it } ?: false
@@ -274,6 +282,9 @@ fun parseOpPerPackage(out: String, op: String): Map<String, Boolean> {
     return result
 }
 
+/** True when `dumpsys deviceidle` says both light and deep doze are on. */
+fun parseDozeEnabled(out: String): Boolean = "mLightEnabled=true" in out && "mDeepEnabled=true" in out
+
 /** The package names in a `pm list packages` reply ("package:com.example" per line). */
 fun parsePackages(out: String): Set<String> =
     out.lineSequence().map { it.trim() }.filter { it.startsWith("package:") }.map { it.removePrefix("package:") }.toSet()
@@ -296,4 +307,13 @@ fun parseServices(out: String): List<String> =
 fun mergeServices(current: String, service: String, on: Boolean): String {
     val others = parseServices(current).filter { it != service }
     return (if (on) others + service else others).joinToString(":")
+}
+
+/** The user's choice for doze, kept so the bridge can turn it back on after a restart. */
+object DeepSleep {
+    private val prefs get() = Watcher.context.getSharedPreferences("battery", android.content.Context.MODE_PRIVATE)
+
+    var wanted: Boolean
+        get() = prefs.getBoolean("deep_sleep", false)
+        set(on) { prefs.edit().putBoolean("deep_sleep", on).apply() }
 }

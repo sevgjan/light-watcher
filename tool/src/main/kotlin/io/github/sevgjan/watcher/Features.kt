@@ -249,6 +249,35 @@ class PairingScreen(sealedActivity: SealedLightActivity) : FeatureScreen(sealedA
     }
 }
 
+/** Doze: Android's deep sleep for an idle phone, which LightOS leaves off. */
+class BatteryScreen(sealedActivity: SealedLightActivity) : FeatureScreen(sealedActivity, "Battery") {
+    private var on by mutableStateOf<Boolean?>(null)
+
+    override suspend fun load() {
+        on = Bridge.deepSleepOn()
+        // Turned on some other way (adb): keep it, so a restart doesn't lose it.
+        if (on == true) io.github.sevgjan.watcher.engine.DeepSleep.wanted = true
+    }
+
+    @Composable
+    override fun Body() {
+        WithBridge(onReady = { load() }) {
+            val o = on
+            ToggleRow("Deep sleep", o) {
+                if (o == null) return@ToggleRow
+                change {
+                    val ok = Bridge.setDeepSleep(!o)
+                    io.github.sevgjan.watcher.engine.DeepSleep.wanted = !o
+                    on = Bridge.deepSleepOn() ?: o
+                    if (!ok) "Couldn't change it." else if (o) "Deep sleep is off." else "Deep sleep is on."
+                }
+            }
+        }
+        Note("LightOS ships with Android's doze turned off, so while the phone lies unused, apps and the system keep waking it all night. Deep sleep turns doze on: after a while still with the screen off, background work and network access are bunched into short windows. Calls, texts, alarms and apps with an ongoing connection (shown as a notification) still come through.")
+        Note("A restart turns it off again. Watcher turns it back on the next time its debug bridge connects (after adb tcpip 5555).")
+    }
+}
+
 /** The screen size used for tall-phone apps, as a toggle. */
 private const val SMALL_DPI = 300
 
