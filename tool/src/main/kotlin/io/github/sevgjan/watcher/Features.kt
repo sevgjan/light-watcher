@@ -275,6 +275,40 @@ class BatteryScreen(sealedActivity: SealedLightActivity) : FeatureScreen(sealedA
         }
         Note("LightOS ships with Android's doze turned off, so while the phone lies unused, apps and the system keep waking it all night. Deep sleep turns doze on: after a while still with the screen off, background work and network access are bunched into short windows. Calls, texts, alarms and apps with an ongoing connection (shown as a notification) still come through.")
         Note("A restart turns it off again. Watcher turns it back on the next time its debug bridge connects (after adb tcpip 5555).")
+        Section("Wi-Fi at night")
+        val nw = io.github.sevgjan.watcher.engine.NightWifi
+        ToggleRow("Wi-Fi off at night", nightWifi) {
+            val turnOn = !nightWifi
+            change {
+                if (turnOn) {
+                    if (Bridge.state.value != BridgeState.Ready) Bridge.connect()
+                    if (Bridge.state.value != BridgeState.Ready) return@change "This needs the debug bridge."
+                    nw.enabled = true
+                    Shortcuts.start()
+                } else {
+                    nw.turnOff()
+                    if (!Shortcuts.enabled) Shortcuts.stop()
+                }
+                nightWifi = turnOn
+                if (turnOn) "Wi-Fi goes off at night." else "Wi-Fi stays on at night."
+            }
+        }
+        if (nightWifi) {
+            ActionRow("From", "%02d:00".format(from)) { from = next(FROM_HOURS, from); nw.fromHour = from }
+            ActionRow("Until", "%02d:00".format(until)) { until = next(UNTIL_HOURS, until); nw.untilHour = until }
+        }
+        Note("On many networks the LP3's Wi-Fi wakes the phone for every announcement other devices make, so a night on Wi-Fi uses more battery than a night on cellular. Inside these hours, ${nw.DELAY_MIN} minutes after the screen goes off, Watcher turns Wi-Fi off; it comes back on when you use the phone, and in the morning. Calls and texts keep working over the mobile network, and apps use mobile data meanwhile. Wi-Fi you turned off yourself stays off.")
+    }
+
+    private var nightWifi by mutableStateOf(io.github.sevgjan.watcher.engine.NightWifi.enabled)
+    private var from by mutableStateOf(io.github.sevgjan.watcher.engine.NightWifi.fromHour)
+    private var until by mutableStateOf(io.github.sevgjan.watcher.engine.NightWifi.untilHour)
+
+    private fun next(options: List<Int>, current: Int) = options[(options.indexOf(current) + 1) % options.size]
+
+    private companion object {
+        val FROM_HOURS = listOf(21, 22, 23, 0, 1)
+        val UNTIL_HOURS = listOf(5, 6, 7, 8, 9)
     }
 }
 

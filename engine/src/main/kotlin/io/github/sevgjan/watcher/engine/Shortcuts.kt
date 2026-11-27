@@ -117,9 +117,12 @@ object Shortcuts {
         ShortcutPanel.changed()
     }
 
-    /** Starts the listening service when the switch is on. Fine to call often; from the background only at boot or after an update. */
+    /**
+     * Starts Watcher's listening service when the clock shortcuts or night Wi-Fi are on. Fine to call
+     * often; from the background only at boot or after an update.
+     */
     fun start(c: Context = Watcher.context) {
-        if (!enabled) return
+        if (!enabled && !NightWifi.enabled) return
         runCatching { c.startForegroundService(Intent(c, ShortcutService::class.java)) }
             .onFailure { Log.w(ShortcutPanel.TAG, "couldn't start the shortcut service: $it") }
     }
@@ -302,13 +305,14 @@ internal object ShortcutPanel {
     private fun dp(c: Context, v: Int) = (v * c.resources.displayMetrics.density).toInt()
 }
 
-/** Keeps Watcher's process, and so its ear for the screen, alive while the clock shortcuts are on. */
+/** Keeps Watcher's process, and so its ear for the screen, alive while the clock shortcuts or night Wi-Fi are on. */
 class ShortcutService : Service() {
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onCreate() {
         super.onCreate()
         ShortcutPanel.start(this)
+        NightWifi.start(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -317,17 +321,18 @@ class ShortcutService : Service() {
         val n = Notification.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.watcher_glyph_grid)
             .setContentTitle("Watcher")
-            .setContentText("Clock shortcuts are on")
+            .setContentText("Listening for the screen")
             .setOngoing(true)
             .build()
         runCatching { startForeground(ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE) }
             .onFailure { Log.w(ShortcutPanel.TAG, "not in the foreground: $it") }
-        if (!Shortcuts.enabled) stopSelf()
+        if (!Shortcuts.enabled && !NightWifi.enabled) stopSelf()
         return START_STICKY
     }
 
     override fun onDestroy() {
         ShortcutPanel.stop(this)
+        NightWifi.stop(this)
         super.onDestroy()
     }
 
@@ -337,7 +342,7 @@ class ShortcutService : Service() {
     }
 }
 
-/** At boot and after an update, brings the shortcut service back when the switch is on. */
+/** At boot and after an update, brings Watcher's service back when a switch that needs it is on. */
 class ShortcutBoot : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) = Shortcuts.start(context)
 }

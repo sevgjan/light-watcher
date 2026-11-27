@@ -22,6 +22,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- Night Wi-Fi: whether Wi-Fi is on before switching it off (switching goes through the debug bridge). -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
 
     <!-- Sees the apps that have a launcher icon, without asking for every package. -->
@@ -83,6 +85,11 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Shows the user's two app shortcuts on the lock screen clock when the screen turns on." />
         </service>
+
+        <!-- Night Wi-Fi's alarms: only Watcher sets them. -->
+        <receiver
+            android:name="io.github.sevgjan.watcher.engine.NightWifiReceiver"
+            android:exported="false" />
 
         <receiver
             android:name="io.github.sevgjan.watcher.engine.ShortcutBoot"

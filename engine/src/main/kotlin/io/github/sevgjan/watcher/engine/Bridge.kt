@@ -247,6 +247,10 @@ object Bridge {
     /** Turns doze, light and deep, on or off. It lasts until the phone restarts. */
     suspend fun setDeepSleep(on: Boolean): Boolean = shell("cmd deviceidle ${if (on) "enable" else "disable"}") != null
 
+    /** Turns Wi-Fi on or off, as the system's own switch would. */
+    suspend fun setWifi(on: Boolean): Boolean =
+        shell("cmd wifi set-wifi-enabled ${if (on) "enabled" else "disabled"}")?.let { "Error" !in it && "Exception" !in it } ?: false
+
     /** Starts a Settings action from the shell, for when Watcher itself isn't allowed to start it. */
     suspend fun openSystemSettings(action: String): Boolean =
         shell("am start -a $action")?.let { "Error" !in it } ?: false

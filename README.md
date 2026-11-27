@@ -1,6 +1,6 @@
 # Watcher
 
-A small utility kit for the Light Phone III: two app shortcuts on the lock screen clock, a real force stop for apps, one-time codes from texts shown over the app you're in, a Bluetooth pairing fix, a smaller screen for apps built for taller phones, and Android's hidden settings, all in LightOS's black-and-white style.
+A small utility kit for the Light Phone III: two app shortcuts on the lock screen clock, a real force stop for apps, one-time codes from texts shown over the app you're in, better battery life overnight, a Bluetooth pairing fix, a smaller screen for apps built for taller phones, and Android's hidden settings, all in LightOS's black-and-white style.
 
 Watcher is a sideloaded app: you install it yourself over USB. It isn't part of Light's Tool Library and isn't made by or affiliated with Light.
 
@@ -16,6 +16,7 @@ Watcher is a sideloaded app: you install it yourself over USB. It isn't part of 
 - **Clock detection for other apps.** LightOS's clock, toolbox and built-in tools are one screen as far as Android can tell. Watcher tells the clock apart and answers "is the clock showing?" for any app that draws on it, so a lock screen panel can keep to the clock. See [For app makers](#for-app-makers).
 - **Apps.** See which apps are open, close their background processes, or force stop them for real. Turn an app's background activity off so it only runs while you have it open.
 - **Text codes.** When a text from a sender you've added (your bank, say) arrives, its one-time code appears in a big box over the app you're in, so you don't have to leave a banking app to read it.
+- **Battery.** LightOS ships with Android's doze switched off, so the phone never really rests when unused. **Deep sleep** turns it on. **Wi-Fi off at night** switches Wi-Fi off ten minutes after the screen goes off during the hours you choose, and back on when you use the phone or in the morning: on many home networks the LP3's Wi-Fi wakes the phone for every announcement other devices make, so a night on cellular uses far less.
 - **Side button.** Double-press to jump back to the app you used before, and again to jump back. A single press still goes Home.
 - **Bluetooth pairing.** LightOS's own pairing prompt crashes when a car or keyboard shows a key to type. Watcher opens its own key screen instead.
 - **Screen size.** Shrinks everything so the buttons of apps built for taller phones fit on screen, and back.
@@ -38,7 +39,7 @@ You need a computer with [adb](https://developer.android.com/tools/releases/plat
 2. Plug in the phone and install it:
 
    ```sh
-   adb install -r watcher-0.3.0.apk
+   adb install -r watcher-0.5.0.apk
    ```
 
    Watcher then shows up among the phone's tools.
@@ -57,7 +58,7 @@ Android doesn't let an ordinary app force stop other apps, grant permissions or 
    Do this again after every restart of the phone.
 2. Open Watcher and tap **Debug bridge → Connect**. The phone asks whether to allow USB debugging from Watcher's key: tap **Allow**. The key is made on the phone and stays there.
 
-Each feature that needs a permission (receiving texts, drawing over apps, usage access, the accessibility services) asks for it through the bridge when you turn it on, and gives it back when you turn it off.
+Each feature that needs a permission (receiving texts, drawing over apps, usage access, the accessibility services) asks for it through the bridge when you turn it on, and gives it back when you turn it off. Deep sleep and Wi-Fi off at night also work through the bridge; after the phone restarts, run `adb tcpip 5555` again so they can.
 
 ## For app makers
 
