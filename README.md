@@ -56,6 +56,8 @@ Android doesn't let an ordinary app force stop other apps, grant permissions or 
    ```
 
    Do this again after every restart of the phone.
+
+   This opens the phone's debug port on the Wi-Fi network as well, so do it on a network you trust (home, not a café). Android still asks before any new computer or app may use it, and the port closes again when the phone restarts.
 2. Open Watcher and tap **Debug bridge → Connect**. The phone asks whether to allow USB debugging from Watcher's key: tap **Allow**. The key is made on the phone and stays there.
 
 Each feature that needs a permission (receiving texts, drawing over apps, usage access, the accessibility services) asks for it through the bridge when you turn it on, and gives it back when you turn it off. Deep sleep and Wi-Fi off at night also work through the bridge; after the phone restarts, run `adb tcpip 5555` again so they can.
