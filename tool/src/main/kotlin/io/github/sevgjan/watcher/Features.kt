@@ -339,6 +339,28 @@ class ScreenSizeScreen(sealedActivity: SealedLightActivity) : FeatureScreen(seal
     }
 }
 
+/** Restarts the phone: the cure for a stuck modem, a hung app or a slow phone, without holding the side button. */
+class RestartScreen(sealedActivity: SealedLightActivity) : FeatureScreen(sealedActivity, "Restart") {
+    /** The first tap arms it; the second restarts. */
+    private var armed by mutableStateOf(false)
+
+    @Composable
+    override fun Body() {
+        WithBridge {
+            ActionRow(
+                if (armed) "Tap again to restart" else "Restart phone",
+                if (armed) "The phone turns off and back on" else "Turns the phone off and on again",
+            ) {
+                if (!armed) { armed = true; return@ActionRow }
+                change {
+                    if (Bridge.reboot()) "Restarting…" else { armed = false; "Couldn't restart: the debug bridge isn't up." }
+                }
+            }
+        }
+        Note("After a restart, Watcher's debug bridge is off until you run adb tcpip 5555 again from a computer, so force stop, deep sleep and the other bridge switches wait until then. LightOS has its own restart too: hold the side button.")
+    }
+}
+
 /** Android's own settings screens, which LightOS keeps but hides. */
 class AndroidSettingsScreen(sealedActivity: SealedLightActivity) : FeatureScreen(sealedActivity, "Android settings") {
     @Composable

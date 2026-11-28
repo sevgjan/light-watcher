@@ -84,6 +84,7 @@ class HomeScreen(sealedActivity: SealedLightActivity) : SimpleLightScreen<Unit>(
                 else -> "Normal"
             }) { navigateTo({ ScreenSizeScreen(it) }) }
             ActionRow("Android settings", "The ones LightOS hides") { navigateTo({ AndroidSettingsScreen(it) }) }
+            ActionRow("Restart", "Turn the phone off and on") { navigateTo({ RestartScreen(it) }) }
             ActionRow("Debug bridge", when (bridge) {
                 BridgeState.Ready -> "Connected"
                 BridgeState.Connecting -> "Connecting…"

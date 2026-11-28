@@ -21,6 +21,7 @@ Watcher is a sideloaded app: you install it yourself over USB. It isn't part of 
 - **Bluetooth pairing.** LightOS's own pairing prompt crashes when a car or keyboard shows a key to type. Watcher opens its own key screen instead.
 - **Screen size.** Shrinks everything so the buttons of apps built for taller phones fit on screen, and back.
 - **Android settings.** Opens the full Android settings, keyboards and languages, which LightOS hides.
+- **Restart.** Turns the phone off and on again with two taps, without holding the side button.
 
 <p>
   <img src="screenshots/clock.png" width="240" alt="The Clock screen: shortcuts and clock detection">
@@ -39,7 +40,7 @@ You need a computer with [adb](https://developer.android.com/tools/releases/plat
 2. Plug in the phone and install it:
 
    ```sh
-   adb install -r watcher-0.5.0.apk
+   adb install -r watcher-0.6.0.apk
    ```
 
    Watcher then shows up among the phone's tools.

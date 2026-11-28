@@ -247,6 +247,18 @@ object Bridge {
     /** Turns doze, light and deep, on or off. It lasts until the phone restarts. */
     suspend fun setDeepSleep(on: Boolean): Boolean = shell("cmd deviceidle ${if (on) "enable" else "disable"}") != null
 
+    /**
+     * Restarts the phone, as `adb reboot` would. The bridge goes down with it, and after the restart it needs
+     * `adb tcpip 5555` again, like after any restart. False only when the bridge isn't up to send it.
+     */
+    suspend fun reboot(): Boolean = withContext(Dispatchers.IO) {
+        val d = dadb ?: return@withContext false
+        // The connection drops as the phone goes down, so a failed reply here is expected.
+        runCatching { d.shell("svc power reboot") }
+        disconnect()
+        true
+    }
+
     /** Turns Wi-Fi on or off, as the system's own switch would. */
     suspend fun setWifi(on: Boolean): Boolean =
         shell("cmd wifi set-wifi-enabled ${if (on) "enabled" else "disabled"}")?.let { "Error" !in it && "Exception" !in it } ?: false
